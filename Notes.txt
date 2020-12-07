@@ -1,0 +1,55 @@
+str1 = 'file:/u7/ylalwani/Waterloo/CS651/github_repos/CS651-Auto-Image-Captioning/deps/train2014_10images/COCO_train2014_000000210065.jpg'
+>>> f1 = open(str1[74:], 'rb')
+>>> f1
+<_io.BufferedReader name='deps/train2014_10images/COCO_train2014_000000210065.jpg'>
+>>> f1.read(10)
+b'\xff\xd8\xff\xe0\x00\x10JFIF'
+
+
+
+sc.binaryFiles(str1[74:]).map(lambda x: x[1]).collect()[0][:10]
+b'\xff\xd8\xff\xe0\x00\x10JFIF'
+
+tempBytes = sc.binaryFiles(str1[74:]).map(lambda x: x[1]).collect()[0][:10]
+b'\xff\xd8\xff\xe0\x00\x10JFIF'
+np.frombuffer(tempBytes, np.uint8)
+array([255, 216, 255, 224,   0,  16,  74,  70,  73,  70], dtype=uint8)
+
+allBytes = sc.binaryFiles(str1[74:]).map(lambda x: x[1]).collect()[0]
+>>> len(allBytes)
+817679
+>>> np.frombuffer(allBytes, np.uint8)
+array([255, 216, 255, ...,  71, 255, 217], dtype=uint8)
+>>> type(cv2.imdecode(np.frombuffer(allBytes, np.uint8), 0))
+<class 'numpy.ndarray'>
+
+
+sc.binaryFiles(str1[74:]).saveAsSequenceFile("tempseq")
+type(sc.sequenceFile("tempseq").map(lambda x: x[1]).collect()[0])
+<class 'bytearray'>
+sc.sequenceFile("tempseq").map(lambda x: x[1]).collect()[0][:10]
+bytearray(b'\xff\xd8\xff\xe0\x00\x10JFIF')
+bytes(sc.sequenceFile("tempseq").map(lambda x: x[1]).collect()[0][:10])
+b'\xff\xd8\xff\xe0\x00\x10JFIF'
+
+
+x1, x2 = sc.sequenceFile("tempseq").collect()[0]
+>>> type(x1)
+<class 'str'>
+>>> type(x2)
+<class 'bytearray'>
+>>> x2[:10]
+bytearray(b'\xff\xd8\xff\xe0\x00\x10JFIF')
+>>> bytes(x2[:10])
+b'\xff\xd8\xff\xe0\x00\x10JFIF'
+
+
+bytes(images.filter(lambda x: x[0] == str1).map(lambda x: x[1]).collect()[0][:10], encoding='utf-8')
+
+
+
+PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./env/bin/python --master yarn-cluster --archives yash_env2/yash_env2.zip#env --num-executors 4 --executor-cores 4 --executor-memory 24G --driver-memory 2g src/main/descriptorgen/SIFT/ConvertToSequenceFile.py CS651FinalProject/val2014 CS651FinalProject/val2014SeqFile 32
+
+PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./env/bin/python --master yarn-cluster --archives yash_env2/yash_env2.zip#env --num-executors 4 --executor-cores 4 --executor-memory 24G --driver-memory 2g src/main/descriptorgen/SIFT/DescriptorExtractor.py CS651FinalProject/val2014SeqFile CS651FinalProject/val2014DescriptorParquet 32
+
+yarn logs -applicationId application_1587834416162_35023 > yarnlogs.txt
