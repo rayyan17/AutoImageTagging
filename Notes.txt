@@ -53,3 +53,13 @@ PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit 
 PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./env/bin/python --master yarn-cluster --archives yash_env2/yash_env2.zip#env --num-executors 4 --executor-cores 4 --executor-memory 24G --driver-memory 2g src/main/descriptorgen/SIFT/DescriptorExtractor.py CS651FinalProject/val2014SeqFile CS651FinalProject/val2014DescriptorParquet 32
 
 yarn logs -applicationId application_1587834416162_35023 > yarnlogs.txt
+
+spark-submit clustering.py 10seqExtractorOutputParquet3 3 -localhost
+PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./env/bin/python --master yarn-cluster --archives yash_env2/yash_env2.zip#env clustering.py 10seqExtractorOutputParquet3 3 -localhost
+
+
+
+
+sqlContext.read.parquet("10seqExtractorOutputParquet3").rdd.map(lambda x: [fun1(l, x['fileName']) for l in x['features']]).flatMap(lambda x: x).map(lambda x: (str(x[0]), np.array(x[1:]))).take(2)
+
+sqlContext.read.parquet("clusteringParquetOutput/Iteration-00009").take(3)[2]['centroid']
