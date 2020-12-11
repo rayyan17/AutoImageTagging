@@ -4,7 +4,7 @@
 
 ##### Virtual Environments
 
-Need to make use of a virtual environment in order allow for packages not installed on all cluster nodes to be made available.
+Need  to make use of a virtual environment in order allow for packages not installed on all cluster nodes to be made available.
 
 Navigate to your project directory and setup you virtual environment via:
 
