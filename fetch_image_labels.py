@@ -69,5 +69,7 @@ if __name__ == '__main__':
     images_all_sub_cat = main_df.groupby("image_path")["category_name"].apply(lambda x: ','.join(x)).reset_index()
 
     main_df.to_csv("image_labels_2014val.csv")
-    images_all_super_cat.to_csv("image_super_cat_2014val.csv")
-    images_all_sub_cat.to_csv("image_sub_cat_2014val.csv")
+    images_all_super_cat.to_csv("image_super_cat_2014val.csv", index=False)
+    images_all_sub_cat.to_csv("image_sub_cat_2014val.csv", index=False)
+
+# hadoop fs -put image_super_cat_2014train.csv /user/ylalwani/CS651FinalProject/image_super_cat_2014train.csv
