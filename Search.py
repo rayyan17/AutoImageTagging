@@ -30,9 +30,10 @@ if __name__ == "__main__":
 
     try:
         input_image_path = sys.argv[1]
-        input_clusters_path = sys.argv[2] # This is the path to the parquet file, if your parquet file is at "clusteringParquetOutput/Iteration-00009", enter that, not "clusteringParquetOutput"        
+        input_clusters_path = sys.argv[2] # This is the path to the parquet file, if your parquet file is at "clusteringParquetOutput/Iteration-00009", enter that, not "clusteringParquetOutput"
+        output_path = sys.argv[3]
     except:
-        print("Usage: Search.py <input_image_path> <input_clusters_path>; Example: Search.py deps/train2014_10images/COCO_train2014_000000100777.jpg train2014_10imagesClusteringParquetOutput/Iteration-00009")
+        print("Usage: Search.py <input_image_path> <input_clusters_path> <output_path>; Example: Search.py deps/train2014_10images/COCO_train2014_000000100777.jpg val2014_clusters_3centroids_10iterations/Iteration-00009 SearchResults")
 
     # Extract SIFT descriptors of Image
     imgfile_imgbytes = sc.binaryFiles(input_image_path)
@@ -50,6 +51,10 @@ if __name__ == "__main__":
     # Find closest cluster for each descriptor, then reduce and sort by most descriptors for each cluster
     results = features_rdd.map(lambda x: find_closest_cluster(clusters_broadcast.value, x))
     results_sorted = results.reduceByKey(lambda x, y: x + y).map(lambda x: (x[1], x[0])).sortByKey(False).map(lambda x: (x[1], x[0]))
-    results_sorted_collected = results_sorted.collect()
 
-    print("results = " + str(results_sorted_collected))
+    # Delete path_path if it already exists
+    fs = (sc._jvm.org.apache.hadoop.fs.FileSystem.get(sc._jsc.hadoopConfiguration()))
+    fs.delete(sc._jvm.org.apache.hadoop.fs.Path(output_path), True)
+    
+    results_sorted.coalesce(1).saveAsTextFile(output_path)
+    

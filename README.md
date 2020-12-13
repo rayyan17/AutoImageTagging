@@ -148,12 +148,8 @@ PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit 
 
 ### Search
 
-Run [Search.py](https://github.com/rayyan17/CS651-Auto-Image-Captioning/blob/main/Search.py) to find the clusters an image belongs to. The result is a list of clusters that would contain descriptors from the input image, sorted by most descriptors per cluster, printed to stdout. The script takes 2 arguments: Input Image File, Input Parquet File with Cluster Information
+Run [Search.py](https://github.com/rayyan17/CS651-Auto-Image-Captioning/blob/main/Search.py) to find the clusters an image belongs to. The result is a list of clusters that would contain descriptors from the input image, sorted by most descriptors per cluster, saved to a TextFile. The script takes 3 arguments: Input Image File, Input Parquet File with Cluster Information, Output Location.
 
-
-(On Linux)
 ```
-spark-submit Search.py deps/train2014_10images/COCO_train2014_000000100777.jpg val2014_clusters_3centroids_10iterations/Iteration-00009 -localhost
+PYSPARK_PYTHON=./env/bin/python SPARK_HOME=/u/cs451/packages/spark spark-submit --conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./env/bin/python --master yarn-cluster --archives yash_env2/yash_env2.zip#env --num-executors 4 --executor-cores 4 --executor-memory 24G --driver-memory 2g Search.py CS651FinalProject/val2014_100images/COCO_val2014_000000241668.jpg CS651FinalProject/val2014_100images_clusters_100centroids_100iterations/Iteration-00099 SearchResult_val2014_000000241668
 ```
-
-TODO: Replace with command for Datasci, save output as textFile
